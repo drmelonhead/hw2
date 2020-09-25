@@ -9,7 +9,7 @@ library(tidyverse)
 ```
 
 # Problem 1
-The first part of this problem is to import and clean the Mr. Trash Wheel data.
+The first part of this problem is to import and clean the Mr. Trash Wheel data and to clean it. 
 ```{r}
 trash_df = 
   readxl::read_excel(
@@ -17,20 +17,34 @@ trash_df =
                      sheet="Mr. Trash Wheel", 
     range ="A2:N406") %>% 
   janitor::clean_names() %>% 
-  filter(!is.na(dumpster))
-
+  filter(!is.na(dumpster)) %>% 
+  mutate(sports_balls=as.integer(sports_balls)
+  )
+trash_df
 ```
 
-
-Here's a **code chunk** that samples from 
-a _normal distribution_:
+The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, omit rows without precipitation data and add a variable year. Next, combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
 
 ```{r}
-samp = rnorm(100)
-length(samp)
+##Import and clean 2017 & 2018 data
+precipitation_2017_df = 
+  readxl::read_excel(
+    "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
+                     sheet="2017 Precipitation", 
+    range ="A2:B14") %>%
+  janitor::clean_names() %>% 
+  mutate(year=2017)
+
+precipitation_2017_df
+
+##Import and clean 2018 data
+precipitation_2018_df = 
+  readxl::read_excel(
+    "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
+                     sheet="2018 Precipitation", 
+    range ="A2:B14") %>%
+  janitor::clean_names() %>% 
+  mutate(year=2018)
+
+precipitation_2018_df
 ```
-
-# Section 2
-
-I can take the mean of the sample, too!
-The mean is `r mean(samp)`.

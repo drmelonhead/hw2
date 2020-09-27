@@ -108,4 +108,26 @@ train_noexit = train_df %>%
 
 Then I calculated the that the proportion of these stations that allow allow enty is `r round(mean(train_noexit$entry), digits = 2)`.
 
+In the next code chuck I reformat data so that route number and route name are distinct variables. First I have to make all the route variables character variables (because 8-11 were doubles). Then I use `pivot_+_longer` to reshape the data from wide to long.
+Finally, I drop all exits that are not at station that services the A line. 
+
+```{r}
+train_df_long=train_df %>% 
+  mutate(route8=as.character(route8)) %>% 
+  mutate(route9=as.character(route9)) %>% 
+  mutate(route10=as.character(route10)) %>% 
+  mutate(route11=as.character(route11)) %>% 
+    pivot_longer(
+      route1:route11,
+      names_to = "Line",
+      values_to ="route",
+      names_prefix = "route") %>%
+  filter(route=="A")
+```
+
+The following stations serve the A train:
+```{r}
+unique(train_df_long$station_name)
+
+```
 

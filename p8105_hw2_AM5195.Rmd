@@ -23,15 +23,13 @@ trash_df =
 trash_df
 ```
 
-The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, omit rows without precipitation data and add a variable year. Next, combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
+The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, we omit rows without precipitation data and add a variable year. 
 
 ```{r}
 ##Import and clean 2017 & 2018 data
 precipitation_2017_df = 
   readxl::read_excel(
-    "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", 
-                     sheet="2017 Precipitation", 
-    range ="A2:B14") %>%
+    "./data/Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet="2017 Precipitation", range ="A2:B14") %>%
   janitor::clean_names() %>% 
   mutate(year=2017)
 
@@ -48,3 +46,17 @@ precipitation_2018_df =
 
 precipitation_2018_df
 ```
+
+
+Next, we combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
+
+```{r}
+precipitation_2017_2018_df=
+  bind_rows(precipitation_2017_df,precipitation_2018_df) %>% 
+  mutate(month=month.name[month])
+
+
+precipitation_2017_2018_df
+```
+
+

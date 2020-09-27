@@ -89,7 +89,7 @@ train_df
 
 The dataset `train_df` includes the following variables: `r names(train_df)`. To clean this data I impored the raw data from the excel file "NYC_Transit_Subway_Entrance_And_Exit_Data.csv", used the `janitorr::clean_name` function to harmonize naming conventions, selelected the desired variables using the `select` function, and used the `mutate` and `ifelse` function to recode entry as a logical vector. The resulting dataframe has `r nrow(train_df)` rows and  `r ncol(train_df)` columns. Tidy is a new term to me, but as far as I can tell these data are Tidy because each row represent a single unit (and entance/exit) and each collumn represents an attribute of that unit. 
 
-There are `r nrow(distinct(train_df,station_name,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11))` distinct stations. I couldn't figure out how to use inline code to calculate the number of distinct ADA copliant stations. Instead I created a new data from that included only ADA compliant stations
+There are `r nrow(distinct(train_df,station_name,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11))` distinct stations. I couldn't figure out how to use inline code to calculate the number of distinct ADA copliant stations. Instead I created a new data from that included only ADA compliant stations:
 
 ```{r}
 train_ada_df = train_df %>% 
@@ -97,5 +97,15 @@ train_ada_df = train_df %>%
 
 ```
 
-Then use the same inline code to figure out that there are `r nrow(distinct(train_ada_df,station_name,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11))` distinct ADA compliant stations. 
+Then I use the same inline code to figure out that there are `r nrow(distinct(train_ada_df,station_name,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11))` distinct ADA compliant stations. 
+
+To figure out what proportion of station entrances / exits without vending allow entrance? I created a data frame that only includes station without vending:
+
+```{r}
+train_noexit = train_df %>% 
+  filter(vending!="YES")
+```
+
+Then I calculated the that the proportion of these stations that allow allow enty is `r round(mean(train_noexit$entry), digits = 2)`.
+
 

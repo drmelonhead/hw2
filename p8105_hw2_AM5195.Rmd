@@ -23,7 +23,7 @@ trash_df =
 trash_df
 ```
 
-The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, we omit rows without precipitation data and add a variable year. 
+The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, I omit rows without precipitation data and add a variable year. 
 
 ```{r}
 ##Import and clean 2017 & 2018 data
@@ -45,13 +45,14 @@ precipitation_2018_df =
   mutate(year=2018)
 
 precipitation_2018_df
+
 ```
-<<<<<<< HEAD
 
 
-Next, we combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful). We also create a data set with only the 2017 Mr. Trash Wheel data, because we'll need it for the following paragraph. 
+Next, I combine precipitation datasets for 2017 and 2018 using `bind_rows` and convert month to a character variable with `month.name`. I also create a data set with only the 2017 Mr. Trash Wheel data, because we'll need it later on in this problem. 
 
-```{r}
+``` {r}
+
 precipitation_2017_2018_df=
   bind_rows(precipitation_2017_df,precipitation_2018_df) %>% 
   mutate(month=month.name[month])
@@ -59,21 +60,24 @@ precipitation_2017_2018_df=
 
 precipitation_2017_2018_df
 
+```
+
+
+The data frame `trash_df`, our read in and cleaned version of "Mr. Trash Wheel" includes the following variables: `r names(trash_df)`. The data has `r nrow(trash_df)` observations. The data frame `precipitation_2017_2018_df` combines precipitation data from 2017 and 2018. This data frame includes the following variables: `r names(precipitation_2017_2018_df)`.
+
+```{r include=FALSE}
+##This code produces a data set with Mr. Trash Wheel data for 2017 only to answer the next question
 trash_2017= trash_df %>%
   filter(year==2017)
 ```
 
 
-The data frame `trash_df`, our read and cleaned version of "Mr. Trash Wheel, includes the following variables: `r names(trash_df)`. The data has `r nrow(trash_df)` observations. The data frame `precipitation_2017_2018_df` combines precipitation data from 2017 and 2018. This data frome includes the following variables: `r names(precipitation_2017_2018_df)`.
-
-
-
-The total precipitation in 2018 was `r sum(precipitation_2018_df$total)` inches. The median number of sports balls in a dumpster in 2017 was `r median(trash_2017$sports_balls)`.
+I can use these data to calculate this like the total precipitation in 2018, which was `r sum(precipitation_2018_df$total)` inches, or that the median median number of sports balls in a dumpster in 2017 was `r median(trash_2017$sports_balls)`.
 
 
 ## Problem 2
 
-In the following codechunk I read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
+In the following code chunk I read and clean the data, and retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. I convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
 
 ```{r}
 train_df=
@@ -87,7 +91,7 @@ train_df
 ```
 
 
-The dataset `train_df` includes the following variables: `r names(train_df)`. To clean this data I impored the raw data from the excel file "NYC_Transit_Subway_Entrance_And_Exit_Data.csv", used the `janitorr::clean_name` function to harmonize naming conventions, selelected the desired variables using the `select` function, and used the `mutate` and `ifelse` function to recode entry as a logical vector. The resulting dataframe has `r nrow(train_df)` rows and  `r ncol(train_df)` columns. Tidy is a new term to me, but as far as I can tell these data are Tidy because each row represent a single unit (and entance/exit) and each collumn represents an attribute of that unit. 
+The dataset `train_df` includes the following variables: `r names(train_df)`. To clean this data I impored the raw data from the excel file "NYC_Transit_Subway_Entrance_And_Exit_Data.csv", used the `janitorr::clean_name` function to harmonize naming conventions, selelected the desired variables using the `select` function, and used the `mutate` and `ifelse` function to recode entry as a logical vector. The resulting dataframe has `r nrow(train_df)` rows and  `r ncol(train_df)` columns. I do not think these data are tidy because the route variables to express different information for different egressess. A Tidy data would have a series of dummy variables for each train line.
 
 There are `r nrow(distinct(train_df,station_name,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11))` distinct stations. I couldn't figure out how to use inline code to calculate the number of distinct ADA copliant stations. Instead I created a new data from that included only ADA compliant stations:
 
@@ -99,13 +103,42 @@ train_ada_df = train_df %>%
 
 Then I use the same inline code to figure out that there are `r nrow(distinct(train_ada_df,station_name,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11))` distinct ADA compliant stations. 
 
-To figure out what proportion of station entrances / exits without vending allow entrance? I created a data frame that only includes station without vending:
+To figure out what proportion of station entrances / exits without vending allow entrance, I create a data frame that only includes station without vending:
 
 ```{r}
 train_noexit = train_df %>% 
   filter(vending!="YES")
 ```
 
-Then I calculated the that the proportion of these stations that allow allow enty is `r round(mean(train_noexit$entry), digits = 2)`.
+and use inline code to calculated that  `r round(mean(train_noexit$entry), digits = 2)*100`% of these entrance/exits allow enty.
 
+In the next code chuck I reformat data so that route number and route name are distinct variables. First I have to make all the route variables character variables (because 8-11 were doubles). Then I use `pivot_+_longer` to reshape the data from wide to long.
+Finally, I drop all exits that are not at station that services the A line. 
 
+```{r}
+train_df_long=train_df %>% 
+  mutate(route8=as.character(route8)) %>% 
+  mutate(route9=as.character(route9)) %>% 
+  mutate(route10=as.character(route10)) %>% 
+  mutate(route11=as.character(route11)) %>% 
+    pivot_longer(
+      route1:route11,
+      names_to = "Line",
+      values_to ="route",
+      names_prefix = "route") %>%
+  filter(route=="A")
+```
+
+The following `r length(unique(train_df_long$station_name))` unique stations serve the A train:
+```{r}
+unique(train_df_long$station_name)
+
+```
+```{r include=FALSE}
+train_df_long=
+  filter(train_df_long, ada=="TRUE")
+```
+
+Of these `r length(unique(train_df_long$station_name))` are ADA compliant.
+
+## Problem 3

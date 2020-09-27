@@ -23,7 +23,7 @@ trash_df =
 trash_df
 ```
 
-The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, omit rows without precipitation data and add a variable year. Next, combine precipitation datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
+The next part of this problem is to read and clean precipitation data for 2017 and 2018. For each, we omit rows without precipitation data and add a variable year. 
 
 ```{r}
 ##Import and clean 2017 & 2018 data

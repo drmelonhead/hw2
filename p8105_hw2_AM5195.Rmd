@@ -153,6 +153,7 @@ pols_month <- read_csv(
   separate(mon,c("year","month","day")) %>% 
   mutate(month=as.numeric(month)) %>% 
   mutate(month=month.name[month]) %>% 
+  mutate(year=as.numeric(year)) %>% 
   mutate(president=ifelse(prez_gop==0,"dem","gop")) %>% 
   select(-c(prez_dem,prez_gop,day))
 
@@ -167,6 +168,7 @@ Second, clean the data in snp.csv using a similar process to the above. For cons
 snp <- read_csv("data/fivethirtyeight_datasets/snp.csv")  %>% separate(date,c("month","day","year")) %>% 
   mutate(month=as.numeric(month)) %>% 
   mutate(month=month.name[month]) %>% 
+  mutate(year=as.numeric(year)) %>% 
   select(-day) %>% 
   arrange(year,month) %>% 
   relocate(year)
@@ -174,4 +176,25 @@ snp <- read_csv("data/fivethirtyeight_datasets/snp.csv")  %>% separate(date,c("m
 snp
 ```
 
+Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+
+```{r}
+unemployment <- read_csv("data/fivethirtyeight_datasets/unemployment.csv") %>% 
+  pivot_longer(
+      !Year,
+      names_to = "month",
+      values_to ="unemployment_rate") %>% 
+  rename(year = Year) %>% 
+  mutate(month=match(month,month.abb)) %>% 
+  mutate(month=month.name[month]) 
+View(unemployment)
+```
+
+Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+```{r}
+five35_merge=
+  left_join(snp, pols_month) %>% 
+  left_join(unemployment)
+```
 

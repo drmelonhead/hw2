@@ -134,6 +134,7 @@ The following `r length(unique(train_df_long$station_name))` unique stations ser
 unique(train_df_long$station_name)
 
 ```
+
 ```{r include=FALSE}
 train_df_long=
   filter(train_df_long, ada=="TRUE")
@@ -142,3 +143,20 @@ train_df_long=
 Of these, `r length(unique(train_df_long$station_name))` are ADA compliant.
 
 ## Problem 3
+
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+
+```{r}
+library(readr)
+pols_month <- read_csv(
+  "data/fivethirtyeight_datasets/pols-month.csv") %>% 
+  separate(mon,c("year","month","day")) %>% 
+  mutate(month=as.numeric(month)) %>% 
+  mutate(month=month.name[month]) %>% 
+  mutate(president=ifelse(prez_gop==0,"dem","gop")) %>% 
+  select(-c(prez_dem,prez_gop,day))
+
+View(pols_month)
+  
+```
+

@@ -112,8 +112,8 @@ train_noexit = train_df %>%
 
 and use inline code to calculated that  `r round(mean(train_noexit$entry), digits = 2)*100`% of these entrance/exits allow enty.
 
-In the next code chuck I reformat data so that route number and route name are distinct variables. First I have to make all the route variables character variables (because 8-11 were doubles). Then I use `pivot_+_longer` to reshape the data from wide to long.
-Finally, I drop all exits that are not at station that services the A line. 
+In the next code chuck I reformat data so that route number and route name are distinct variables. First I have to make all the route variables character variables (because 8-11 were doubles). Then I use `pivot_longer` to reshape the data from wide to long.
+Finally, I drop all egresses that are not at station servicing the A line. 
 
 ```{r}
 train_df_long=train_df %>% 
@@ -139,6 +139,6 @@ train_df_long=
   filter(train_df_long, ada=="TRUE")
 ```
 
-Of these `r length(unique(train_df_long$station_name))` are ADA compliant.
+Of these, `r length(unique(train_df_long$station_name))` are ADA compliant.
 
 ## Problem 3
